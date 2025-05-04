@@ -1,0 +1,9 @@
+export const TextDefault = 'black';
+export const Tex = '#FFFFFF';
+export const primary = '#3F51B5';
+export const secondary = '#FF5722';
+export const success = '#4CAF50';
+export const danger = '#F44336';
+export const warning = '#FFC107';
+export const info = '#2196F3';
+export const dotColor = 'rgba(255,255,255,0.4)';
