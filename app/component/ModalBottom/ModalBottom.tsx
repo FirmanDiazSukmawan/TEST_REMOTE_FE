@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import Icon from '../icon/Icon';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 interface PropsModalBottom {
   isOpen: boolean;
@@ -38,6 +39,8 @@ export default function ModalBottom({
   const [isVisible, setIsVisible] = useState(false);
   const translateY = useRef(new Animated.Value(600)).current;
   const [maxHeight, setMaxHeight] = useState('95%');
+
+  const insets = useSafeAreaInsets();
 
   const panResponder = useRef(
     PanResponder.create({
@@ -67,9 +70,8 @@ export default function ModalBottom({
         toValue: 500,
         duration: 300,
         useNativeDriver: false,
-      }).start(() => {
-        setIsVisible(false);
-      });
+      }).start(() => {});
+      setIsVisible(false);
       onClose && onClose(true);
     }
   };
@@ -100,7 +102,6 @@ export default function ModalBottom({
     } else {
       hideModal();
     }
-    setIsVisible(isOpen);
   }, [isOpen]);
 
   useEffect(() => {
@@ -125,7 +126,7 @@ export default function ModalBottom({
   }, []);
   return (
     <Modal
-      style={styles.sectionModal}
+      style={[styles.sectionModal]}
       transparent
       visible={isVisible}
       onRequestClose={handleRequstClose}>
@@ -148,7 +149,10 @@ export default function ModalBottom({
             style={[
               styles.bottomSheet,
               {transform: [{translateY}]},
-              {height: !height ? 'auto' : height},
+              {
+                height: !height ? 'auto' : height,
+                paddingBottom: insets.bottom || 16,
+              },
             ]}>
             {buttonClose && (
               <TouchableOpacity

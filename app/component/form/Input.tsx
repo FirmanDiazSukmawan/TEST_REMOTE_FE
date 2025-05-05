@@ -10,7 +10,7 @@ import {
 import {TouchableOpacity} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LabelForm from './label';
-import {danger} from '../color/TextColor';
+import color from '../color/TextColor';
 
 interface InputProps {
   name: string;
@@ -34,6 +34,8 @@ interface InputProps {
   };
   onFocus?: () => void;
   onBlur?: () => void;
+  readOnly?: boolean;
+  editable?: boolean;
 }
 
 export default function Input(props: InputProps) {
@@ -70,6 +72,8 @@ export default function Input(props: InputProps) {
         }
         onBlur={props?.onBlur}
         onFocus={props?.onFocus}
+        readOnly={props?.readOnly ? true : false}
+        editable={props?.editable ? true : false}
       />
       {props.addOn && (
         <TouchableOpacity onPress={handleClickAddon} style={props.addOn.style}>
@@ -102,6 +106,6 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
   },
   errorInput: {
-    borderColor: danger,
+    borderColor: color.danger,
   },
 });

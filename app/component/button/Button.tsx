@@ -1,19 +1,44 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 
 type Props = {
   title: string;
   onClick?: any;
   disabled?: boolean;
+  loading?: boolean;
+  custom?: boolean;
+  children?: any;
 };
 
-const Button = ({title, onClick, disabled = false}: Props) => {
+const Button = ({
+  title,
+  onClick,
+  disabled = false,
+  loading = false,
+  custom = false,
+  children,
+}: Props) => {
   return (
     <TouchableOpacity
-      style={styles.addToCartButton}
+      style={[styles.addToCartButton, disabled && {opacity: 0.5}]}
       onPress={onClick}
       disabled={disabled}>
-      <Text style={styles.addToCartText}>{title}</Text>
+      {custom ? (
+        <>{children}</>
+      ) : (
+        <>
+          {loading ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Text style={styles.addToCartText}>{title}</Text>
+          )}
+        </>
+      )}
     </TouchableOpacity>
   );
 };

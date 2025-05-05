@@ -1,17 +1,20 @@
-import {RefreshControl, SafeAreaView, StyleSheet, View} from 'react-native';
-import React, {JSX, useCallback, useEffect, useState} from 'react';
+import {SafeAreaView, StyleSheet} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import HeaderSearch from '../component/header/HeaderSearch';
+import {usePageLoading} from '../hooks/UseLoading';
+import axiosInstance from '../function/axios';
 import {FlashList} from '@shopify/flash-list';
-import HeaderHome from '../../component/header/HeaderHome.tsx';
-import {homeSections} from './homeContent/HomeSection';
-import axiosInstance from '../../function/axios';
-import {usePageLoading} from '../../hooks/UseLoading.ts';
-import LoadingFooter from '../../component/loading/LoadingFooter.tsx';
+import {RefreshControl} from 'react-native-gesture-handler';
+import LoadingFooter from '../component/loading/LoadingFooter';
+import CardListSearchProduct from '../component/card/CardListSearchProduct';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
-const Index = () => {
+const SearchScreen = () => {
   const [data, setData] = useState<any>([]);
-  const [category, setCategory] = useState<string>('');
   const [moreData, setMoreData] = useState<boolean>(false);
   const [skip, setSkip] = useState<number>(0);
+  const [search, setSearch] = useState('');
+  const insets = useSafeAreaInsets();
   const {
     loading,
     refreshing,
@@ -22,9 +25,9 @@ const Index = () => {
     stopRefreshing,
     startScrollLoading,
     stopScrollLoading,
-  } = usePageLoading('home');
+  } = usePageLoading('searchScreen');
 
-  const getProduct = async (selectedCategory?: string) => {
+  const getProduct = async (searching?: string) => {
     setMoreData(false);
     stopScrollLoading();
     startRefreshing();
@@ -34,10 +37,9 @@ const Index = () => {
     setSkip(0);
 
     try {
-      const endpoint = selectedCategory
-        ? `products/category/${selectedCategory}`
-        : 'products';
-      const res = await axiosInstance.get(`${endpoint}`, {
+      const endpoint =
+        searching !== '' ? `products/search?q=${searching}` : 'products';
+      const res = await axiosInstance.get(endpoint, {
         params: {
           limit: 10,
         },
@@ -69,7 +71,8 @@ const Index = () => {
       stopRefreshing();
 
       const nextData = skip + 10;
-      const endpoint = category ? `products/category/${category}` : 'products';
+      const endpoint =
+        search !== '' ? `products/search?q=${search}` : 'products';
       const res = await axiosInstance.get(`${endpoint}`, {
         params: {
           limit: 10,
@@ -79,7 +82,7 @@ const Index = () => {
 
       setData((prevData: any) => [...prevData, ...res?.data?.products]);
       setSkip(nextData);
-      setMoreData(skip === res?.data?.total ? false : true);
+      setMoreData(nextData >= res?.data?.total ? false : true);
       stopScrollLoading();
       stopRefreshing();
     } catch (error: any) {
@@ -88,19 +91,9 @@ const Index = () => {
     }
   }, [skip, moreData, scrollLoading]);
 
-  const handleCategorySelect = (selectedCategory: string) => {
-    const newCategory = selectedCategory === category ? '' : selectedCategory;
-    setCategory(newCategory);
-    getProduct(newCategory);
-  };
-
   useEffect(() => {
-    getProduct(category);
+    getProduct(search);
   }, []);
-
-  const renderItem = ({item}: {item: {id: string; component: JSX.Element}}) => {
-    return <View>{item.component}</View>;
-  };
 
   const renderListFooter = useCallback(() => {
     return scrollLoading && !loading ? (
@@ -108,22 +101,32 @@ const Index = () => {
     ) : null;
   }, [scrollLoading, loading]);
 
+  const renderItem = ({item}: {item: any}) => {
+    return <CardListSearchProduct item={item} />;
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <HeaderHome />
+    <SafeAreaView
+      style={[styles.container, {paddingBottom: insets.bottom || 16}]}>
+      <HeaderSearch
+        getData={getProduct}
+        search={search}
+        setSearch={setSearch}
+      />
       <FlashList
-        data={homeSections(data, category, handleCategorySelect)}
+        data={data}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item?.id}
         estimatedItemSize={200}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={styles.listContainer}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.3}
+        numColumns={2}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => getProduct(category)}
+            onRefresh={() => getProduct('')}
           />
         }
         ListFooterComponent={renderListFooter}
@@ -132,19 +135,20 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default SearchScreen;
 
 const styles = StyleSheet.create({
+  contentContainer: {
+    paddingTop: 5,
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
     paddingTop: '7%',
     paddingBottom: '10%',
   },
-  contentContainer: {
-    paddingTop: 5,
-  },
-  section: {
-    flexDirection: 'column',
+  listContainer: {
+    padding: 12,
+    paddingBottom: 20,
   },
 });

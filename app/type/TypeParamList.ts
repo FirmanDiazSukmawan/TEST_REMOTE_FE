@@ -2,6 +2,8 @@ export type RootStackParamList = {
   Home: undefined;
   ListCart: undefined;
   productDetail: {id: string | number};
+  searchScreen: undefined;
+  favoriteScreen: undefined;
 };
 
 export type CartItem = {
@@ -13,4 +15,14 @@ export type CartItem = {
   discountPrice?: number;
   quantity: number;
   rating?: number;
+};
+
+export type WishlistItem = {
+  id: string;
+  name: string;
+  image: string;
+  brand: string;
+  price: number;
+  rating: number;
+  discountPrice?: number;
 };

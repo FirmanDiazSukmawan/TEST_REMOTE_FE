@@ -1,7 +1,6 @@
 import {
   Image,
   StyleSheet,
-  Text,
   View,
   ScrollView,
   Dimensions,
@@ -21,9 +20,7 @@ const banners = [
 
 const AUTO_SCROLL_INTERVAL = 3000;
 
-type Props = {};
-
-const Banner = (props: Props) => {
+const Banner = () => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -37,7 +34,7 @@ const Banner = (props: Props) => {
       easing: Easing.linear,
       useNativeDriver: false,
     }).start();
-  }, [currentIndex]);
+  }, [currentIndex, progressAnim]);
 
   useEffect(() => {
     const interval = setInterval(() => {

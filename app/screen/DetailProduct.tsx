@@ -22,6 +22,7 @@ import {useCartStore} from '../zustand/CartStore';
 import Toast from 'react-native-toast-message';
 import {usePageLoading} from '../hooks/UseLoading';
 import SkeletonLoader from '../component/loading/Skeleton';
+import {useWishlistStore} from '../zustand/WishlistStore';
 
 const {width} = Dimensions.get('window');
 
@@ -45,6 +46,7 @@ const DetailProduct = ({route}: Props) => {
     stopRefreshing,
   } = usePageLoading('detailProduct');
   const addToCart = useCartStore(state => state.addToCart);
+  const {addToWishlist, removeFromWishlist, inWislisht} = useWishlistStore();
 
   const getProductDetail = useCallback(async () => {
     startLoading();
@@ -96,6 +98,39 @@ const DetailProduct = ({route}: Props) => {
         text2: 'Product added to Cart ✅',
         position: 'top',
         visibilityTime: 2000,
+      });
+    }
+  };
+
+  const toggleWishlist = () => {
+    const isInWish = inWislisht(product?.id);
+
+    if (isInWish) {
+      removeFromWishlist(product?.id);
+      Toast.show({
+        type: 'info',
+        text1: 'Removed from Wishlist',
+        position: 'top',
+        visibilityTime: 1500,
+      });
+    } else {
+      addToWishlist({
+        id: product?.id,
+        name: product?.title || product?.name,
+        image: product?.images?.[0] || '',
+        brand: product?.brand,
+        price: product?.price,
+        rating: product?.rating,
+        discountPrice: product?.discountPercentage
+          ? product?.price -
+            (product?.price * product?.discountPercentage) / 100
+          : undefined,
+      });
+      Toast.show({
+        type: 'success',
+        text1: 'Added to Wishlist',
+        position: 'top',
+        visibilityTime: 1500,
       });
     }
   };
@@ -436,10 +471,31 @@ const DetailProduct = ({route}: Props) => {
       </ScrollView>
 
       <BottomButton>
-        <TouchableOpacity style={styles.wishlistButton}>
-          <Icon name="favorite-border" size={24} color="#6200ee" />
-        </TouchableOpacity>
-        <Button onClick={handleAddToCart} title="Add To Cart" />
+        {loading ? (
+          <SkeletonLoader
+            width={50}
+            height={25}
+            borderRadius={4}
+            style={styles.gapToDesc}
+          />
+        ) : (
+          <TouchableOpacity
+            style={styles.wishlistButton}
+            onPress={toggleWishlist}>
+            <Icon
+              name={inWislisht(product?.id) ? 'favorite' : 'favorite-border'}
+              size={24}
+              color="#6200ee"
+            />
+          </TouchableOpacity>
+        )}
+
+        <Button
+          onClick={loading ? undefined : handleAddToCart}
+          title="Add To Cart"
+          disabled={loading ? true : false}
+          loading={loading}
+        />
       </BottomButton>
     </View>
   );

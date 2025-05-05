@@ -1,28 +1,36 @@
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import Input from './form/Input';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import React from 'react';
+import Input from '../form/Input';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../type/TypeParamList';
+import {RootStackParamList} from '../../type/TypeParamList';
 
-type Props = {};
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
-type NavigationProp = StackNavigationProp<RootStackParamList, 'ListCart'>;
+interface Props {
+  getData: any;
+  search: string;
+  setSearch: any;
+}
 
-const HeaderHome = (props: Props) => {
-  const [search, setSearch] = useState('');
+const HeaderSearch = ({getData, search, setSearch}: Props) => {
   const navigation = useNavigation<NavigationProp>();
 
   const handleSearch = () => {
-    console.log('Searching');
+    getData(search);
   };
   return (
     <View style={styles.section}>
+      <TouchableOpacity
+        style={styles.cartButton}
+        onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back" size={20} color="black" />
+      </TouchableOpacity>
       <Input
         name="search"
         type="text"
-        placeholder={'Search  Product ..'}
+        placeholder={'Search Product ...'}
         placeholderTextColor="black"
         value={search || ''}
         onChange={(text: any) => setSearch(text)}
@@ -38,16 +46,11 @@ const HeaderHome = (props: Props) => {
         }}
         onSubmitEditing={() => handleSearch()}
       />
-      <TouchableOpacity
-        style={styles.cartButton}
-        onPress={() => navigation.navigate('ListCart')}>
-        <FontAwesome5 name="shopping-cart" size={20} color="black" />
-      </TouchableOpacity>
     </View>
   );
 };
 
-export default HeaderHome;
+export default HeaderSearch;
 
 const styles = StyleSheet.create({
   section: {

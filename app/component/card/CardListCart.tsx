@@ -9,7 +9,7 @@ import {CartItem} from '../../type/TypeParamList';
 type Props = {
   selected: boolean;
   item: CartItem;
-  handleSelection: (id: string) => void;
+  handleSelection: (item: CartItem) => void;
   changeQuantity: (id: string, quantity: number) => void;
   removeFromCart: (id: string) => void;
 };
@@ -25,7 +25,7 @@ const CardListCart = ({
     <View style={styles.card}>
       <CheckBox
         value={selected}
-        onValueChange={() => handleSelection(item?.id)}
+        onValueChange={() => handleSelection(item)}
         style={styles.checkbox}
         tintColors={{true: color.primary, false: 'gray'}}
         onTintColor={color.primary}

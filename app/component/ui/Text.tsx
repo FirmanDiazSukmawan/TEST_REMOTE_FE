@@ -57,6 +57,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
   },
+  bold: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '600',
+  },
 });
 
 type Variant = keyof typeof styles;

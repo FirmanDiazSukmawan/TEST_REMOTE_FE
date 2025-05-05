@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, SafeAreaView} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 import StyledText from '../component/ui/Text';
@@ -7,15 +7,21 @@ import Button from '../component/button/Button';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useCartStore} from '../zustand/CartStore';
 import CardListCart from '../component/card/CardListCart';
+import ModalBottom from '../component/ModalBottom/ModalBottom';
+import Checkout from './Checkout';
+import {CartItem} from '../type/TypeParamList';
 
 const ListCart = () => {
   const {cartItems, updateQuantity, removeFromCart} = useCartStore();
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
   const insets = useSafeAreaInsets();
+  const [showModalBottom, setShowModalBottom] = useState<boolean>(false);
 
-  const toggleSelection = (id: string) => {
+  const toggleSelection = (item: any) => {
     setSelectedItems(prev =>
-      prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id],
+      prev.includes(item)
+        ? prev.filter((items: any) => items?.id !== item?.id)
+        : [...prev, item],
     );
   };
 
@@ -24,21 +30,31 @@ const ListCart = () => {
   };
 
   const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => {
-      if (selectedItems.includes(item.id)) {
-        const price = item.discountPrice ?? item.price;
-        return total + price * item.quantity;
-      }
-      return total;
+    return selectedItems.reduce((total, item: any) => {
+      const price = item?.discountPrice ?? item?.price;
+      return total + price * item.quantity;
     }, 0);
   };
 
   const handleCheckout = () => {
-    console.log('Checking out selected items:', selectedItems);
+    setShowModalBottom(true);
   };
 
-  const renderItem = ({item}: {item: any}) => {
-    const isSelected = selectedItems.includes(item.id);
+  useEffect(() => {
+    setSelectedItems(prevSelected =>
+      prevSelected.map(selectedItem => {
+        const updatedItem = cartItems?.find(
+          cartItem => cartItem?.id === selectedItem?.id,
+        );
+        return updatedItem ?? selectedItem;
+      }),
+    );
+  }, [cartItems]);
+
+  const renderItem = ({item}: {item: CartItem}) => {
+    const isSelected = selectedItems?.some(
+      (selected: any) => selected.id === item.id,
+    );
 
     return (
       <CardListCart
@@ -77,6 +93,12 @@ const ListCart = () => {
           disabled={selectedItems.length === 0}
         />
       </BottomButton>
+
+      <ModalBottom
+        isOpen={showModalBottom}
+        onClose={() => setShowModalBottom(false)}>
+        <Checkout data={selectedItems} setShowModal={setShowModalBottom} />
+      </ModalBottom>
     </>
   );
 };
