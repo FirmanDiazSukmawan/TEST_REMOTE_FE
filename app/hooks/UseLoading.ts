@@ -1,4 +1,3 @@
-// hooks/usePageLoading.ts
 import {useCallback} from 'react';
 import {useLoadingState} from './LoadingState';
 

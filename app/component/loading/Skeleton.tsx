@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Animated, Easing, Dimensions} from 'react-native';
+import {View, StyleSheet, Animated, Easing} from 'react-native';
 
 const SkeletonLoader = ({
   width = '100%',
@@ -37,7 +37,6 @@ const SkeletonLoader = ({
     outputRange: [-200, 200],
   });
 
-  // Jika untuk text, atur height berdasarkan fontSize
   const textHeight = isText
     ? typeof style.fontSize === 'number'
       ? style.fontSize * 1.2

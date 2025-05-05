@@ -1,14 +1,18 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import Input from './form/Input';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../type/TypeParamList';
 
 type Props = {};
 
+type NavigationProp = StackNavigationProp<RootStackParamList, 'ListCart'>;
+
 const HeaderHome = (props: Props) => {
   const [search, setSearch] = useState('');
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   const handleSearch = () => {
     console.log('Searching');
@@ -24,6 +28,7 @@ const HeaderHome = (props: Props) => {
         onChange={(text: any) => setSearch(text)}
         style={styles.input}
         sectionStyle={styles.sectionSearch}
+        error_messages={[]}
         addOn={{
           iconName: 'search',
           iconSize: 20,

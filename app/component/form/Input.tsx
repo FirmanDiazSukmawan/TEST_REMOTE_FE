@@ -17,9 +17,9 @@ interface InputProps {
   value: string;
   style?: StyleProp<TextStyle>;
   sectionStyle?: StyleProp<TextStyle>;
-  label: string;
-  placeholder: string;
-  placeholderTextColor: string;
+  label?: string;
+  placeholder?: string;
+  placeholderTextColor?: string;
   onChange: (text: string) => void;
   onSubmitEditing: (text: string) => void;
   error_messages: [];
@@ -43,10 +43,12 @@ export default function Input(props: InputProps) {
 
   return (
     <View style={props.sectionStyle}>
-      <LabelForm
-        label={props.label}
-        error={props.error_messages ? true : false}
-      />
+      {props?.label ? (
+        <LabelForm
+          label={props.label}
+          error={props.error_messages ? true : false}
+        />
+      ) : null}
       <TextInput
         style={[
           props.style,

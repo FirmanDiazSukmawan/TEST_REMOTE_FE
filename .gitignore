@@ -73,3 +73,11 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Tambahan
+.env
+.env.backup
+/ios/*.dSYM.zip
+/ios/*.cer
+/ios/*.cerSginingRequest
+/ios/*.p12

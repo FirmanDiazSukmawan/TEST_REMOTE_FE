@@ -1,6 +1,5 @@
 import {
   StyleSheet,
-  Text,
   View,
   Image,
   Dimensions,
@@ -11,6 +10,10 @@ import {FlashList} from '@shopify/flash-list';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SkeletonLoader from '../loading/Skeleton';
 import {usePageLoading} from '../../hooks/UseLoading.ts';
+import {useNavigation} from '@react-navigation/native';
+import StyledText from '../ui/Text.tsx';
+import {RootStackParamList} from '../../type/TypeParamList.ts';
+import {StackNavigationProp} from '@react-navigation/stack';
 
 const {width} = Dimensions.get('window');
 const CARD_WIDTH = (width - 36) / 2;
@@ -18,6 +21,7 @@ const CARD_WIDTH = (width - 36) / 2;
 type Product = {
   id: number;
   title: string;
+  brand: string;
   price: number;
   rating: number;
   images: string[];
@@ -27,8 +31,11 @@ type Props = {
   data: Product[];
 };
 
+type NavigationProp = StackNavigationProp<RootStackParamList, 'productDetail'>;
+
 const CardListProduct = ({data}: Props) => {
   const {loading} = usePageLoading('home');
+  const navigation = useNavigation<NavigationProp>();
 
   if (loading) {
     return (
@@ -44,17 +51,12 @@ const CardListProduct = ({data}: Props) => {
                 style={styles.productImage}
               />
               <View style={styles.textContainer}>
-                <SkeletonLoader
-                  width={120}
-                  height={16}
-                  borderRadius={4}
-                  style={{marginBottom: 6}}
-                />
+                <SkeletonLoader width={120} height={16} borderRadius={4} />
                 <SkeletonLoader width={60} height={14} borderRadius={4} />
               </View>
             </TouchableOpacity>
           )}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={(_, index) => index?.toString()}
           numColumns={2}
           estimatedItemSize={CARD_WIDTH + 150}
           contentContainerStyle={styles.listContainer}
@@ -66,7 +68,13 @@ const CardListProduct = ({data}: Props) => {
 
   const renderItem = ({item}: {item: Product}) => {
     return (
-      <TouchableOpacity style={styles.cardContainer}>
+      <TouchableOpacity
+        style={styles.cardContainer}
+        onPress={() =>
+          navigation.navigate('productDetail', {
+            id: item?.id,
+          })
+        }>
         <Image
           source={{uri: item.images[0]}}
           style={styles.productImage}
@@ -74,16 +82,14 @@ const CardListProduct = ({data}: Props) => {
         />
 
         <View style={styles.textContainer}>
-          <Text style={styles.productTitle} numberOfLines={2}>
-            {item.title}
-          </Text>
+          <StyledText variant="title">{item.title}</StyledText>
+          <StyledText variant="description">{item.brand}</StyledText>
 
           <View style={styles.ratingContainer}>
             <Icon name="star" size={16} color="#FFD700" />
-            <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
+            <StyledText variant="rating">{item.rating.toFixed(1)}</StyledText>
           </View>
-
-          <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
+          <StyledText variant="title">${item.price.toFixed(2)}</StyledText>
         </View>
       </TouchableOpacity>
     );
@@ -94,7 +100,7 @@ const CardListProduct = ({data}: Props) => {
       <FlashList
         data={data}
         renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item?.id?.toString()}
         numColumns={2}
         estimatedItemSize={CARD_WIDTH + 150}
         contentContainerStyle={styles.listContainer}
@@ -134,27 +140,12 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     padding: 10,
-  },
-  productTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: 6,
-    height: 30,
-  },
-  productPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#6200ee',
+    gap: 5,
+    display: 'flex',
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  ratingText: {
-    fontSize: 12,
-    color: '#888',
-    marginLeft: 4,
   },
 });
 

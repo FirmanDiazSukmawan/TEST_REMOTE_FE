@@ -1,12 +1,7 @@
 import React, {useRef} from 'react';
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Dimensions, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
+import StyledText from '../../ui/Text';
 
 type TabItem = {
   slug: string;
@@ -40,9 +35,11 @@ const TabList = ({data, activeId, onTabPress}: Props) => {
       <TouchableOpacity
         style={[styles.tabItem, isActive && styles.activeTab]}
         onPress={() => handlePress(item)}>
-        <Text style={[styles.tabText, isActive && styles.activeText]}>
+        <StyledText
+          variant="tabText"
+          style={isActive ? styles.activeText : undefined}>
           {item.name}
-        </Text>
+        </StyledText>
       </TouchableOpacity>
     );
   };
@@ -91,11 +88,6 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     backgroundColor: '#6200ee',
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#555',
-    fontWeight: '500',
   },
   activeText: {
     color: 'white',

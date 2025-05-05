@@ -7,9 +7,13 @@ import {homeSections} from './homeContent/HomeSection';
 import axiosInstance from '../../function/axios';
 import {usePageLoading} from '../../hooks/UseLoading.ts';
 import LoadingFooter from '../../component/loading/LoadingFooter.tsx';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../type/TypeParamList.ts';
+
+type NavigationProp = StackNavigationProp<RootStackParamList, 'ListCart'>;
 
 const Index = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const [data, setData] = useState<any>([]);
   const [category, setCategory] = useState<string>('');
   const [moreData, setMoreData] = useState<boolean>(false);

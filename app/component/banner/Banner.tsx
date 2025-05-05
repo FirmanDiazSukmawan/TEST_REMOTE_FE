@@ -19,7 +19,7 @@ const banners = [
   require('../../assets/picture/banner1.png'),
 ];
 
-const AUTO_SCROLL_INTERVAL = 3000; // 3 seconds
+const AUTO_SCROLL_INTERVAL = 3000;
 
 type Props = {};
 
@@ -28,9 +28,8 @@ const Banner = (props: Props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
 
-  // Reset and start progress animation whenever currentIndex changes
   useEffect(() => {
-    progressAnim.setValue(0); // Reset progress
+    progressAnim.setValue(0);
 
     Animated.timing(progressAnim, {
       toValue: 1,
@@ -40,7 +39,6 @@ const Banner = (props: Props) => {
     }).start();
   }, [currentIndex]);
 
-  // Auto-scroll logic
   useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (currentIndex + 1) % banners.length;
